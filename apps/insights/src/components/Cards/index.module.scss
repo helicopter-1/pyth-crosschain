@@ -1,0 +1,33 @@
+@use "@pythnetwork/component-library/theme";
+
+.cards {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: stretch;
+  gap: theme.spacing(6);
+  overflow-x: auto;
+  margin-left: calc(-1 * #{theme.$max-width-padding});
+  margin-right: calc(-1 * #{theme.$max-width-padding});
+  padding: theme.spacing(4) theme.$max-width-padding theme.spacing(4)
+    theme.$max-width-padding;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: theme.$max-width-padding;
+
+  @include theme.breakpoint("sm") {
+    padding-top: theme.spacing(6);
+    padding-bottom: theme.spacing(6);
+  }
+
+  & > * {
+    flex: 1 0 theme.spacing(60);
+    width: theme.spacing(60);
+    scroll-snap-align: start;
+  }
+
+  .publishersChart,
+  .priceFeedsChart {
+    & svg {
+      cursor: pointer;
+    }
+  }
+}

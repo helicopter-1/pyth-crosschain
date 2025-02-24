@@ -11,10 +11,9 @@
     justify-content: space-between;
 
     .header {
-      @include theme.h3;
-
       color: theme.color("heading");
-      font-weight: theme.font-weight("semibold");
+
+      @include theme.h3;
     }
 
     .rankingsLastUpdated {
@@ -66,10 +65,11 @@
           }
 
           .poolUsed {
-            margin: 0;
+            line-height: 125%;
+            letter-spacing: letter-spacing("tighter");
             color: theme.color("heading");
 
-            @include theme.h3;
+            @include theme.text("xl", "medium");
           }
 
           .poolTotal {

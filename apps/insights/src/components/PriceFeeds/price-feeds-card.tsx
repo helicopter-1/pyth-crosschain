@@ -16,6 +16,7 @@ import { useQueryState, parseAsString } from "nuqs";
 import { Suspense, useCallback, useMemo } from "react";
 import { useFilter, useCollator } from "react-aria";
 
+import styles from "./price-feeds-card.module.scss";
 import { usePriceFeeds } from "../../hooks/use-price-feeds";
 import { useQueryParamFilterPagination } from "../../hooks/use-query-param-filter-pagination";
 import { Cluster } from "../../services/pyth";
@@ -146,7 +147,14 @@ const ResolvedPriceFeedsCard = ({ priceFeeds, ...props }: Props) => {
           ),
           priceFeedName: <PriceFeedTag compact symbol={symbol} />,
           assetClass: <AssetClassTag symbol={symbol} />,
-          priceFeedId: <FeedKey size="xs" variant="ghost" feedKey={key} />,
+          priceFeedId: (
+            <FeedKey
+              size="xs"
+              variant="ghost"
+              feedKey={key}
+              className={styles.feedKey ?? ""}
+            />
+          ),
         },
       })),
     [paginatedItems],
@@ -227,6 +235,7 @@ const PriceFeedsCardContents = ({ id, ...props }: PriceFeedsCardContents) => (
   <Card
     id={id}
     icon={<ChartLine />}
+    className={styles.priceFeedsCard}
     title={
       <>
         <span>Price Feeds</span>
@@ -237,8 +246,21 @@ const PriceFeedsCardContents = ({ id, ...props }: PriceFeedsCardContents) => (
         )}
       </>
     }
+    toolbarClassName={styles.toolbar}
     toolbar={
       <>
+        <SearchInput
+          size="sm"
+          width={50}
+          placeholder="Feed symbol"
+          className={styles.searchInput ?? ""}
+          {...(props.isLoading
+            ? { isPending: true, isDisabled: true }
+            : {
+                value: props.search,
+                onChange: props.onSearchChange,
+              })}
+        />
         <Select<string>
           label="Asset Class"
           size="sm"
@@ -260,17 +282,6 @@ const PriceFeedsCardContents = ({ id, ...props }: PriceFeedsCardContents) => (
                 onSelectionChange: props.onAssetClassChange,
               })}
         />
-        <SearchInput
-          size="sm"
-          width={50}
-          placeholder="Feed symbol"
-          {...(props.isLoading
-            ? { isPending: true, isDisabled: true }
-            : {
-                value: props.search,
-                onChange: props.onSearchChange,
-              })}
-        />
       </>
     }
     {...(!props.isLoading && {
@@ -287,11 +298,48 @@ const PriceFeedsCardContents = ({ id, ...props }: PriceFeedsCardContents) => (
       ),
     })}
   >
+    <ul className={styles.priceFeedList}>
+      {props.isLoading ? (
+        <></>
+      ) : (
+        props.rows.map((row) => (
+          <li key={row.id} className={styles.priceFeed}>
+            <div className={styles.priceFeedHeader}>
+              {row.data.priceFeedName}
+              {row.data.price}
+            </div>
+            <dl className={styles.priceFeedDetails}>
+              <div className={styles.priceFeedDetailsItem}>
+                <dt>Asset Class</dt>
+                <dd>{row.data.assetClass}</dd>
+              </div>
+              <div className={styles.priceFeedDetailsItem}>
+                <dt>Price Feed ID</dt>
+                <dd>{row.data.priceFeedId}</dd>
+              </div>
+              <div className={styles.priceFeedDetailsItem}>
+                <dt>Confidence Interval</dt>
+                <dd>{row.data.confidenceInterval}</dd>
+              </div>
+              <div className={styles.priceFeedDetailsItem}>
+                <dt>Exponent</dt>
+                <dd>{row.data.exponent}</dd>
+              </div>
+              <div className={styles.priceFeedDetailsItem}>
+                <dt># Publishers</dt>
+                <dd>{row.data.numPublishers}</dd>
+              </div>
+            </dl>
+          </li>
+        ))
+      )}
+    </ul>
     <Table
       rounded
       fill
       label="Price Feeds"
       stickyHeader={rootStyles.headerHeight}
+      className={styles.table ?? ""}
       columns={[
         {
           id: "priceFeedName",
